@@ -1,3 +1,11 @@
-function isValidText(value) {
-  return value && value.trim().length > 0;
+module.exports.isEmail = (value) => {
+  return value.includes('@');
+}
+
+module.exports.isNotEmpty = (value) => {
+  return value.trim() !== '';
+}
+
+module.exports.hasMinLength = (value, minLength) => {
+  return value.length >= minLength;
 }
