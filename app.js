@@ -1,17 +1,25 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
-const cors = require('cors');
-const { createUser, loginUser } = require('./controller/user');
-const PORT = process.env.PORT || 8080
+const cors = require("cors");
+const { createUser, loginUser } = require("./controller/user");
+const PORT = process.env.PORT || 8080;
 
-app.use(cors());
-app.use(express.json())
+const corsOptions = {
+  origin: '*',
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true, // Enable credentials (cookies, HTTP authentication) cross-origin
+  optionsSuccessStatus: 204, 
+  exposedHeaders: 'Authorization'
+};
 
-app.post('/signup', createUser)
-app.post('/login', loginUser)
+app.use(cors(corsOptions));
+app.use(express.json());
+
+app.post("/signup", createUser);
+app.post("/login", loginUser);
 
 app.listen(PORT, () => {
-    console.log(`Listening On Port ${PORT}`);
-})
+  console.log(`Listening On Port ${PORT}`);
+});

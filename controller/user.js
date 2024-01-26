@@ -10,11 +10,13 @@ exports.createUser = async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
-    let errors = {};
+    let errors = {
+      message: "Validation Error..please try again."
+    };
     if (!isEmail(email) && isNotEmpty(email)) {
       errors.email = "Invalid Email";
     }
-    if (isNotEmpty(username) && !hasMinLength(username, 5)) {
+    if (isNotEmpty(username) && !hasMinLength(username, 3)) {
       errors.username = "Invalid Username";
     }
     if (!hasMinLength(password, 6)) {
@@ -22,11 +24,7 @@ exports.createUser = async (req, res) => {
     }
 
     if (Object.keys(errors).length > 0) {
-      console.log(errors);
-      return res.status(422).json({
-        message: "validation error occured, please try again",
-        errors,
-      });
+      return res.status(422).json(errors);
     }
 
     const userExist = await pool.query(
@@ -46,29 +44,30 @@ exports.createUser = async (req, res) => {
 
     const token = await jwtGenerator(newUser.rows[0].userId);
 
-    return res.status(201).json({token, newUser});
+    return res.status(201).json({ token, newUser });
   } catch (e) {
     res.status(500).json({ error: "Server Error" });
   }
 };
 
 exports.loginUser = async (req, res) => {
-  try{
-    const {email, password} = req.body;
-    const findUser = await pool.query(`SELECT * FROM Users WHERE email= '${email}';`);
-    const user = findUser.rows[0]
-    if(!user){
-      return res.status(401).json({error: "This Email does´nt exist"})
+  try {
+    const { email, password } = req.body;
+    const findUser = await pool.query(
+      `SELECT * FROM Users WHERE email= '${email}';`
+    );
+    const user = findUser.rows[0];
+    if (!user) {
+      return res.status(401).json({ error: "This Email does´nt exist" });
     }
     const validatePassword = await bcrypt.compare(password, user.password);
-    if(!validatePassword){
-      return res.status(401).json({error: "Entered Password is incorrect"})
+    if (!validatePassword) {
+      return res.status(401).json({ error: "Entered Password is incorrect" });
     }
-    console.log(user);
-    return res.status(200).json({ user })
-  }catch(e){
-    return res.status(500).json({error: "Server Error"})
+    const token = jwtGenerator(user.userId);
+    res.setHeader('Authorization', `Bearer ${token}`);
+    return res.status(201).json({ message: "Login Successfull", user });
+  } catch (e) {
+    return res.status(500).json({ error: "Server Error" });
   }
-    
 };
-  
