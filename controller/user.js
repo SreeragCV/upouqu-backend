@@ -1,7 +1,4 @@
 const pool = require("../config/dbconfig");
-const express = require("express");
-const app = express();
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { isEmail, isNotEmpty, hasMinLength } = require("../utils/validation");
 const jwtGenerator = require("../utils/JwtGenerator");
@@ -23,7 +20,7 @@ exports.createUser = async (req, res) => {
       errors.email = "Invalid Password";
     }
 
-    if (Object.keys(errors).length > 0) {
+    if (Object.keys(errors).length > 1) {
       return res.status(422).json(errors);
     }
 
@@ -64,9 +61,10 @@ exports.loginUser = async (req, res) => {
     if (!validatePassword) {
       return res.status(401).json({ error: "Entered Password is incorrect" });
     }
-    const token = jwtGenerator(user.userId);
+    const id = user.userid;
+    const token = jwtGenerator(id);
     res.setHeader('Authorization', `Bearer ${token}`);
-    return res.status(201).json({ message: "Login Successfull", user });
+    return res.status(201).json({ message: "Login Successfull", id, token });
   } catch (e) {
     return res.status(500).json({ error: "Server Error" });
   }
