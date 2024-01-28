@@ -8,7 +8,7 @@ exports.createUser = async (req, res) => {
     const { email, username, password } = req.body;
 
     let errors = {
-      message: "Validation Error..please try again."
+      message: "Validation Error..please try again.",
     };
     if (!isEmail(email) && isNotEmpty(email)) {
       errors.email = "Invalid Email";
@@ -63,9 +63,18 @@ exports.loginUser = async (req, res) => {
     }
     const id = user.userid;
     const token = jwtGenerator(id);
-    res.setHeader('Authorization', `Bearer ${token}`);
+    res.setHeader("Authorization", `Bearer ${token}`);
     return res.status(201).json({ message: "Login Successfull", id, token });
   } catch (e) {
     return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+module.exports.isAuth = async (req, res) => {
+  try {
+    res.json({ status: true, userId: req.userId });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send("Server Error");
   }
 };

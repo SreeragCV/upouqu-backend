@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
-const { createUser, loginUser } = require("./controller/user");
+const { createUser, loginUser, isAuth } = require("./controller/user");
 const { contributeBook } = require("./controller/contribution");
 const { verifyToken } = require("./middleware/authorization");
 const PORT = process.env.PORT || 8080;
@@ -22,6 +22,7 @@ app.use(express.json());
 app.post("/signup", createUser);
 app.post("/login", loginUser);
 app.get("/contribute",verifyToken, contributeBook);
+app.get("/is-auth", verifyToken, isAuth)
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);
