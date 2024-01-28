@@ -38,10 +38,10 @@ exports.createUser = async (req, res) => {
     const newUser = await pool.query(
       `INSERT INTO Users (username, email, password) VALUES('${username}', '${email}', '${hashPassword}') RETURNING *;`
     );
-
-    const token = await jwtGenerator(newUser.rows[0].userId);
-
-    return res.status(201).json({ token, newUser });
+    const id = await newUser.rows[0].userid
+    const token =  jwtGenerator(id);
+    res.setHeader("Authorization", `Bearer ${token}`);
+    return res.status(201).json({ message: "Signup Successfull", id, token });
   } catch (e) {
     res.status(500).json({ error: "Server Error" });
   }
