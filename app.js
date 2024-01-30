@@ -6,6 +6,7 @@ const cors = require("cors");
 const { createUser, loginUser, isAuth } = require("./controller/user");
 const { contributeBook } = require("./controller/contribution");
 const { verifyToken } = require("./middleware/authorization");
+const { getAllBooks } = require("./controller/book");
 const PORT = process.env.PORT || 8080;
 
 const corsOptions = {
@@ -21,8 +22,9 @@ app.use(express.json());
 
 app.post("/signup", createUser);
 app.post("/login", loginUser);
-app.get("/contribute",verifyToken, contributeBook);
 app.get("/is-auth", verifyToken, isAuth)
+app.get("/contribute",verifyToken, contributeBook);
+app.get("/books", getAllBooks)
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);

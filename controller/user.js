@@ -55,11 +55,11 @@ exports.loginUser = async (req, res) => {
     );
     const user = findUser.rows[0];
     if (!user) {
-      return res.status(401).json({ error: "This Email does´nt exist" });
+      return res.status(401).json({ error_message: "Entered Email Does'nt Exist" });
     }
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
-      return res.status(401).json({ error: "Entered Password is incorrect" });
+      return res.status(401).json({ error_message: "Entered Password Is Incorrect" });
     }
     const id = user.userid;
     const token = jwtGenerator(id);
