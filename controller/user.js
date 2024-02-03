@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { isEmail, isNotEmpty, hasMinLength } = require("../utils/validation");
 const jwtGenerator = require("../utils/JwtGenerator");
 
-exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res) => {
   try {
     const { email, username, password } = req.body;
 
@@ -38,16 +38,17 @@ exports.createUser = async (req, res) => {
     const newUser = await pool.query(
       `INSERT INTO Users (username, email, password) VALUES('${username}', '${email}', '${hashPassword}') RETURNING *;`
     );
-    const id = await newUser.rows[0].userid
+    const id = await newUser.rows[0].user_id
     const token =  jwtGenerator(id);
     res.setHeader("Authorization", `Bearer ${token}`);
+    console.log(id);
     return res.status(201).json({ message: "Signup Successfull", id, token });
   } catch (e) {
     res.status(500).json({ error: "Server Error" });
   }
 };
 
-exports.loginUser = async (req, res) => {
+module.exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const findUser = await pool.query(
@@ -61,7 +62,7 @@ exports.loginUser = async (req, res) => {
     if (!validatePassword) {
       return res.status(401).json({ error_message: "Entered Password Is Incorrect" });
     }
-    const id = user.userid;
+    const id = user.user_id;
     const token = jwtGenerator(id);
     res.setHeader("Authorization", `Bearer ${token}`);
     return res.status(201).json({ message: "Login Successfull", id, token });
@@ -72,9 +73,17 @@ exports.loginUser = async (req, res) => {
 
 module.exports.isAuth = async (req, res) => {
   try {
-    res.json({ status: true, userId: req.userId });
+    res.json({ status: true, user_id: req.user_id });
   } catch (error) {
-    console.log(error.message);
     res.status(500).send("Server Error");
   }
 };
+
+
+module.exports.userProfile = async (req, res) => {
+  console.log('adsaaaaaaaaaaaaaaaaaaaa');
+  const id = await req.params.id;
+  console.log(id);
+  const user = await pool.query(`SELECT * FROM Users WHERE user_id= '${id}';`);
+  return res.status(200).json({username: user.rows[0].username})
+}

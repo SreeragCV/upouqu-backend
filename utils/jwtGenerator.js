@@ -4,7 +4,7 @@ dotenv.config();
 
 function jwtGenerator(userId) {
   const payload = {
-    userId: userId,
+    user_id: userId,
   };
   return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: "2d" });
 }
