@@ -4,6 +4,7 @@ dotenv.config();
 
 module.exports.verifyToken = async function (req, res, next) {
   let token = await req.headers.token;
+  console.log(token);
   if (!token) {
     return res.status(401).json("Unauthorized Request / Access Denied");
   }
