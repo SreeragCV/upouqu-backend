@@ -12,10 +12,11 @@ module.exports.createUser = async (req, res) => {
     let errors = {
       message: "Validation Error..please try again.",
     };
-    if (!isEmail(email) && isNotEmpty(email)) {
+    if (!isEmail(email) || !isNotEmpty(email) || !hasMinLength(email, 8)) {
       errors.email = "Invalid Email";
     }
-    if (isNotEmpty(username) && !hasMinLength(username, 3)) {
+
+    if (!isNotEmpty(username) || !hasMinLength(username, 3)) {
       errors.username = "Invalid Username";
     }
     if (!hasMinLength(password, 6)) {

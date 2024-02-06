@@ -9,3 +9,7 @@ module.exports.isNotEmpty = (value) => {
 module.exports.hasMinLength = (value, minLength) => {
   return value.length >= minLength;
 }
+
+module.exports.isNumber = (value) => {
+  return !isNaN(value);
+}
