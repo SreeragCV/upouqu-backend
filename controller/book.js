@@ -8,9 +8,9 @@ exports.getAllBooks = async (req, res) => {
 module.exports.contributeBook = async function (req, res) {
   try {
     const { book_name, genre, price, description } = req.body;
-    const file = req.files;
 
-    console.log(book_name);
+    const file = req.files
+    console.log(file.image[0].mimetype );
 
     let errors = { message: "Validation Errors!" };
 
@@ -33,6 +33,8 @@ module.exports.contributeBook = async function (req, res) {
     if (Object.keys(errors).length > 1) {
       return res.status(422).json(errors);
     }
+
+
 
     return res.json({ message: "SUCCESS" });
   } catch (e) {}

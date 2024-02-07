@@ -37,14 +37,15 @@ module.exports.createUser = async (req, res) => {
         .json({ error_message: "Username or Email already exists" });
     }
 
+    const role = 'user' 
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = await pool.query(
-      `INSERT INTO Users (username, email, password) VALUES('${username}', '${email}', '${hashPassword}') RETURNING *;`
+      `INSERT INTO Users (username, email, role, password) VALUES('${username}', '${email}', '${role}', '${hashPassword}') RETURNING *;`
     );
     const id = await newUser.rows[0].user_id;
-    const token = jwtGenerator(id);
+    const token = jwtGenerator(id, role);
     res.setHeader("Authorization", `Bearer ${token}`);
-    console.log(id);
+
     return res.status(201).json({ message: "Signup Successfull", id, token });
   } catch (e) {
     res.status(500).json({ message: "Server Error" });

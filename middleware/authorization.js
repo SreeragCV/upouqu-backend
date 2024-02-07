@@ -16,7 +16,9 @@ module.exports.verifyToken = async function (req, res, next) {
     if (!verifiedUser) {
       return res.status(401).json("Not Authorized");
     }
+    console.log(verifiedUser);
     req.user_id = verifiedUser.user_id
+    req.role = verifiedUser.role
     next();
   } catch (e) {
     res.status(400).json("Invalid Token");
