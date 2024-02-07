@@ -43,7 +43,9 @@ module.exports.createUser = async (req, res) => {
       `INSERT INTO Users (username, email, role, password) VALUES('${username}', '${email}', '${role}', '${hashPassword}') RETURNING *;`
     );
     const id = await newUser.rows[0].user_id;
+    
     const token = jwtGenerator(id, role);
+
     res.setHeader("Authorization", `Bearer ${token}`);
 
     return res.status(201).json({ message: "Signup Successfull", id, token });
