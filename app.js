@@ -5,7 +5,7 @@ dotenv.config();
 const cors = require("cors");
 const { createUser, loginUser, isAuth, userProfile } = require("./controller/user");
 const { contributeBook } = require("./controller/book");
-const { verifyToken } = require("./middleware/authorization");
+const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const { getAllBooks } = require("./controller/book");
 const multer = require('multer');
 const PORT = process.env.PORT || 8080;
@@ -31,7 +31,7 @@ app.post("/signup", createUser);
 app.post("/login", loginUser);
 app.get("/is-auth", verifyToken, isAuth)
 app.get("/contribute",verifyToken, contributeBook);
-app.get("/user/:id",verifyToken, userProfile)
+app.get("/user/:id",verifyToken, isSuperAdmin, userProfile)
 app.post('/contribute', multiUpload, verifyToken, contributeBook);
 
 app.listen(PORT, () => {

@@ -75,7 +75,8 @@ module.exports.loginUser = async (req, res) => {
         .json({ error_message: "Entered Password Is Incorrect" });
     }
     const id = user.user_id;
-    const token = jwtGenerator(id);
+    const role = user.role
+    const token = jwtGenerator(id, role);
     res.setHeader("Authorization", `Bearer ${token}`);
     return res.status(201).json({ message: "Login Successfull", id, token });
   } catch (e) {
@@ -87,6 +88,7 @@ module.exports.loginUser = async (req, res) => {
 // authentication
 module.exports.isAuth = async (req, res) => {
   try {
+    console.log(req.user_id);
     res.json({ status: true, user_id: req.user_id });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
@@ -104,8 +106,12 @@ module.exports.userProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "No User Found" });
     }
-    return res.status(200).json({ username: user.rows[0].username });
+    const existingUser = user.rows[0]
+    // console.log(user);
+    return res.status(200).json({ username: existingUser.username, role: existingUser.role });
   } catch (e) {
     return res.status(500).json({message: 'Server Error'});
   }
 };
+
+

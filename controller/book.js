@@ -11,10 +11,8 @@ module.exports.contributeBook = async function (req, res) {
     const { book_name, genre, price, description } = req.body;
     const file = req.files;
 
-    console.log(req.body);
     const validImage = file.image[0].mimetype.split("/")[0] === "image";
     const validPdf = file.book[0].mimetype === "application/pdf";
-
     const limitedImages = file.image.length === 1
     const limitedPdfs = file.book.length === 1
 

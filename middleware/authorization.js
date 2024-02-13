@@ -16,10 +16,24 @@ module.exports.verifyToken = async function (req, res, next) {
     if (!verifiedUser) {
       return res.status(401).json("Not Authorized");
     }
-    req.user_id = verifiedUser.user_id
-    req.role = verifiedUser.role
+    req.user_id = verifiedUser.user_id;
+    req.role = verifiedUser.role;
     next();
   } catch (e) {
     res.status(400).json("Invalid Token");
+  }
+};
+
+module.exports.isSuperAdmin = async (req, res, next) => {
+  try {
+    const role = req.role;
+    if (role !== "super-admin") {
+      return res
+        .status(400)
+        .json({ message: "Not Authorized / Not an Admin", role });
+    }
+    next();
+  } catch (e) {
+    return res.status(500).json("Server Error");
   }
 };
