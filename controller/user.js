@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const { isEmail, isNotEmpty, hasMinLength } = require("../utils/validation");
 const jwtGenerator = require("../utils/JwtGenerator");
 
-
 // signup
 module.exports.createUser = async (req, res) => {
   try {
@@ -37,23 +36,24 @@ module.exports.createUser = async (req, res) => {
         .json({ error_message: "Username or Email already exists" });
     }
 
-    const role = 'user' 
+    const role = "user";
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = await pool.query(
       `INSERT INTO Users (username, email, role, password) VALUES('${username}', '${email}', '${role}', '${hashPassword}') RETURNING *;`
     );
     const id = await newUser.rows[0].user_id;
-    
+
     const token = jwtGenerator(id, role);
 
     res.setHeader("Authorization", `Bearer ${token}`);
 
-    return res.status(201).json({ message: "Signup Successfull", id, token });
+    return res
+      .status(201)
+      .json({ message: "Signup Successfull", id, token, role });
   } catch (e) {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
 
 // login
 module.exports.loginUser = async (req, res) => {
@@ -75,26 +75,25 @@ module.exports.loginUser = async (req, res) => {
         .json({ error_message: "Entered Password Is Incorrect" });
     }
     const id = user.user_id;
-    const role = user.role
+    const role = user.role;
     const token = jwtGenerator(id, role);
     res.setHeader("Authorization", `Bearer ${token}`);
-    return res.status(201).json({ message: "Login Successfull", id, token });
+    return res
+      .status(201)
+      .json({ message: "Login Successfull", id, token, role });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
 // authentication
 module.exports.isAuth = async (req, res) => {
   try {
-    console.log(req.user_id);
-    res.json({ status: true, user_id: req.user_id });
+    res.json({ status: true, user_id: req.user_id, role: req.role });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
 
 // user-profile
 module.exports.userProfile = async (req, res) => {
@@ -106,12 +105,26 @@ module.exports.userProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "No User Found" });
     }
-    const existingUser = user.rows[0]
+    const existingUser = user.rows[0];
     // console.log(user);
-    return res.status(200).json({ username: existingUser.username, role: existingUser.role });
+    return res
+      .status(200)
+      .json({ username: existingUser.username, role: existingUser.role });
   } catch (e) {
-    return res.status(500).json({message: 'Server Error'});
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
+// admin-panel
+module.exports.getAllUsers = async (req, res) => {
+  try {
+    const data = await pool.query(`SELECT * FROM Users WHERE role= 'user'`);
+    if(data.rowCount === 0){
+      return res.status(200).json({message: 'No users found'})
+    }
+    const allUsers = data.rows;
+    return res.status(200).json({ users: allUsers });
+  } catch (e) {
+    res.status(500).json({message: 'Server Error'})
+  }
+};
