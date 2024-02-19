@@ -10,6 +10,7 @@ module.exports.contributeBook = async function (req, res) {
   try {
     const { book_name, genre, price, description } = req.body;
     const file = req.files;
+    const genres = genre.split(',');
 
     const validImage = file.image[0].mimetype.split("/")[0] === "image";
     const validPdf = file.book[0].mimetype === "application/pdf";
@@ -44,7 +45,7 @@ module.exports.contributeBook = async function (req, res) {
       errors.book_name = "Invalid Details, must give a book name";
     }
 
-    if (!isNotEmpty(genre)) {
+    if (genres.length < 0) {
       errors.genre = "Invalid Details, must give a genre";
     }
 

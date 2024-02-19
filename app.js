@@ -39,7 +39,7 @@ app.get("/is-auth", verifyToken, isAuth);
 app.get("/contribute", verifyToken, contributeBook);
 app.get("/user/:id", verifyToken, userProfile);
 app.post("/contribute", multiUpload, verifyToken, contributeBook);
-app.get("/admin-panel", verifyToken, isSuperAdmin, getAllUsers);
+app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);
