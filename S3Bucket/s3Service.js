@@ -23,7 +23,9 @@ exports.s3UploadV3 = async (files) => {
       Body: file.buffer,
     };
   });
-  return await Promise.all(
+  const results = await Promise.all(
     params.map((param) => s3Client.send(new PutObjectCommand(param)))
   );
+
+  return { results, params };
 };
