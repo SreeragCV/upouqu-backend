@@ -1,5 +1,6 @@
 const { isNotEmpty, isNumber } = require("../utils/validation");
 const pool = require("../config/dbconfig");
+const { s3UploadV3 } = require("../S3Bucket/s3Service");
 
 exports.getAllBooks = async (req, res) => {
   try {
@@ -61,8 +62,15 @@ module.exports.contributeBook = async function (req, res) {
       return res.status(422).json(errors);
     }
 
+    const files = [file.image[0], file.book[0]]
+
+    const result = await s3UploadV3(files)
+    console.log(result);
+
     // const newBook = await pool.query(`INSERT INTO Books (book_name, )`);
 
     return res.json({ message: "SUCCESS" });
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 };

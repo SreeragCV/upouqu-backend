@@ -16,11 +16,14 @@ const { getAllBooks } = require("./controller/book");
 const multer = require("multer");
 const PORT = process.env.PORT || 8080;
 
-const upload = multer({ dest: "./upload" });
+
+const storage = multer.memoryStorage()
+const upload = multer({ storage });
 const multiUpload = upload.fields([
   { name: "book", maxCount: 1 },
   { name: "image", maxCount: 1 },
 ]);
+
 
 const corsOptions = {
   origin: "*",
