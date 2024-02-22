@@ -6,7 +6,9 @@ const jwtGenerator = require("../utils/JwtGenerator");
 // signup
 module.exports.createUser = async (req, res) => {
   try {
-    const { email, username, password } = req.body;
+    const { email, username, password, full_name } = req.body;
+
+    console.log(full_name);
 
     let errors = {
       message: "Validation Error..please try again.",
@@ -18,6 +20,11 @@ module.exports.createUser = async (req, res) => {
     if (!isNotEmpty(username) || !hasMinLength(username, 3)) {
       errors.username = "Invalid Username";
     }
+
+    if (!isNotEmpty(full_name) || !hasMinLength(full_name, 3)) {
+      errors.username = "Invalid Name";
+    }
+
     if (!hasMinLength(password, 6)) {
       errors.email = "Invalid Password";
     }
@@ -39,17 +46,18 @@ module.exports.createUser = async (req, res) => {
     const role = "user";
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = await pool.query(
-      `INSERT INTO Users (username, email, role, password) VALUES('${username}', '${email}', '${role}', '${hashPassword}') RETURNING *;`
+      `INSERT INTO Users (full_name, username, email, role, password) VALUES($1, $2, $3, $4, $5) RETURNING *`,
+      [full_name, username, email, role, hashPassword]
     );
-    const id = await newUser.rows[0].user_id;
-
-    const token = jwtGenerator(id, role);
+    
+    const id = newUser.rows[0].user_id;
+    const token = jwtGenerator(id, role, full_name);
 
     res.setHeader("Authorization", `Bearer ${token}`);
 
     return res
       .status(201)
-      .json({ message: "Signup Successfull", id, token, role });
+      .json({ message: "Signup Successfull", id, token, role, full_name });
   } catch (e) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -76,11 +84,12 @@ module.exports.loginUser = async (req, res) => {
     }
     const id = user.user_id;
     const role = user.role;
+    const full_name = user.full_name
     const token = jwtGenerator(id, role);
     res.setHeader("Authorization", `Bearer ${token}`);
     return res
       .status(201)
-      .json({ message: "Login Successfull", id, token, role });
+      .json({ message: "Login Successfull", id, token, role, full_name });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }
@@ -89,7 +98,7 @@ module.exports.loginUser = async (req, res) => {
 // authentication
 module.exports.isAuth = async (req, res) => {
   try {
-    res.json({ status: true, user_id: req.user_id, role: req.role });
+    res.json({ status: true, user_id: req.user_id, role: req.role, full_name: req.full_name });
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -119,12 +128,12 @@ module.exports.userProfile = async (req, res) => {
 module.exports.getAllUsers = async (req, res) => {
   try {
     const data = await pool.query(`SELECT * FROM Users WHERE role= 'user'`);
-    if(data.rowCount === 0){
-      return res.status(200).json({message: 'No users found'})
+    if (data.rowCount === 0) {
+      return res.status(200).json({ message: "No users found" });
     }
     const allUsers = data.rows;
     return res.status(200).json({ users: allUsers });
   } catch (e) {
-    res.status(500).json({message: 'Server Error'})
+    res.status(500).json({ message: "Server Error" });
   }
 };

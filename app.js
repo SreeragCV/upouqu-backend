@@ -10,9 +10,8 @@ const {
   userProfile,
   getAllUsers,
 } = require("./controller/user");
-const { contributeBook } = require("./controller/book");
+const { contributeBook, getHorrorBooks } = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
-const { getAllBooks } = require("./controller/book");
 const multer = require("multer");
 const PORT = process.env.PORT || 8080;
 
@@ -42,6 +41,7 @@ app.get("/is-auth", verifyToken, isAuth);
 app.get("/contribute", verifyToken, contributeBook);
 app.get("/user/:id", verifyToken, userProfile);
 app.post("/contribute", multiUpload, verifyToken, contributeBook);
+app.get("/horror-books", getHorrorBooks);
 app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 
 app.listen(PORT, () => {

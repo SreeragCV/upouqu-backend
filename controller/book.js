@@ -2,11 +2,6 @@ const { isNotEmpty, isNumber } = require("../utils/validation");
 const pool = require("../config/dbconfig");
 const { s3UploadV3 } = require("../S3Bucket/s3Service");
 
-exports.getAllBooks = async (req, res) => {
-  try {
-  } catch (e) {}
-};
-
 module.exports.contributeBook = async function (req, res) {
   try {
     const { book_name, genre, price, description } = req.body;
@@ -63,7 +58,6 @@ module.exports.contributeBook = async function (req, res) {
     }
 
     const files = [file.image[0], file.book[0]];
-
     const { params } = await s3UploadV3(files);
 
     let image_url = `https://upouqu-bucket.s3.amazonaws.com/`;
@@ -89,15 +83,49 @@ module.exports.contributeBook = async function (req, res) {
     image_url += imageUrlFilter?.Key;
     pdf_url += pdfUrlFilter?.Key;
 
+    const newBook = await pool.query(
+      `INSERT INTO Books (book_name, price, image_url, pdf_url, genre, description, user_id) VALUES($1, $2, $3, $4, $5::TEXT[], $6, $7) RETURNING *`,
+      [book_name, price, image_url, pdf_url, genres, description, req.user_id]
+    );
 
-    // const newBook = await pool.query(
-    //   `INSERT INTO Books (book_name, price, image_url, pdf_url, genre, user_id) VALUES('${book_name}', '${price}', '${image_url}', '${pdf_url}', '${genre}, '${req.user_id}') RETURNING *;`
-    // );
-
-    console.log(newBook);
-
-    return res.json({ message: "SUCCESS" });
+    return res.json({ message: "Book Uploaded Successfully" });
   } catch (e) {
-    console.log(e);
+    return res.json({ message: "Server Error" });
   }
+};
+
+exports.getHorrorBooks = async (req, res) => {
+  try {
+    const horrorBooks = await pool.query(
+      `SELECT * FROM Books WHERE 'Horror' = ANY (genre);`
+    );
+    return res.status(200).json({ books: horrorBooks, message: "SUCCESS!" });
+  } catch (e) {}
+};
+
+exports.getActionBooks = async (req, res) => {
+  try {
+    const actionBooks = await pool.query(
+      `SELECT * FROM Books WHERE 'Action' = ANY (genre);`
+    );
+    return res.status(200).json({ books: horrorBooks, message: "SUCCESS!" });
+  } catch (e) {}
+};
+
+exports.getThrillerBooks = async (req, res) => {
+  try {
+    const thrillerBooks = await pool.query(
+      `SELECT * FROM Books WHERE 'Thriller' = ANY (genre);`
+    );
+    return res.status(200).json({ books: horrorBooks, message: "SUCCESS!" });
+  } catch (e) {}
+};
+
+exports.getRomanceBooks = async (req, res) => {
+  try {
+    const romanceBooks = await pool.query(
+      `SELECT * FROM Books WHERE 'Romance' = ANY (genre);`
+    );
+    return res.status(200).json({ books: horrorBooks, message: "SUCCESS!" });
+  } catch (e) {}
 };
