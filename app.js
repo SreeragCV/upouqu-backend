@@ -10,19 +10,37 @@ const {
   userProfile,
   getAllUsers,
 } = require("./controller/user");
-const { contributeBook, getHorrorBooks, getNovelBooks, getPsychologyBooks, getShortStoryBooks, getPhilosophyBooks, getLiteratureBooks, getHistoryBooks, getRomanceBooks, getMysteryBooks, getFictionBooks, getPoetryBooks, getBiographyBooks, getActionBooks, getScienceFictionBooks, getFantasyBooks, getHumorBooks, getThrillerBooks } = require("./controller/book");
+const {
+  contributeBook,
+  getHorrorBooks,
+  getNovelBooks,
+  getPsychologyBooks,
+  getShortStoryBooks,
+  getPhilosophyBooks,
+  getLiteratureBooks,
+  getHistoryBooks,
+  getRomanceBooks,
+  getMysteryBooks,
+  getFictionBooks,
+  getPoetryBooks,
+  getBiographyBooks,
+  getActionBooks,
+  getScienceFictionBooks,
+  getFantasyBooks,
+  getHumorBooks,
+  getThrillerBooks,
+  getBookDetails,
+} = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
 const PORT = process.env.PORT || 8080;
 
-
-const storage = multer.memoryStorage()
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const multiUpload = upload.fields([
   { name: "book", maxCount: 1 },
   { name: "image", maxCount: 1 },
 ]);
-
 
 const corsOptions = {
   origin: "*",
@@ -41,6 +59,10 @@ app.get("/is-auth", verifyToken, isAuth);
 app.get("/contribute", verifyToken, contributeBook);
 app.get("/user/:id", verifyToken, userProfile);
 app.post("/contribute", multiUpload, verifyToken, contributeBook);
+app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
+app.get("/books/:id", getBookDetails);
+
+//genre-routes
 app.get("/psychology", getPsychologyBooks);
 app.get("/thriller", getThrillerBooks);
 app.get("/novel", getNovelBooks);
@@ -58,7 +80,6 @@ app.get("/horror", getHorrorBooks);
 app.get("/science-fiction", getScienceFictionBooks);
 app.get("/fantsay", getFantasyBooks);
 app.get("/humor", getHumorBooks);
-app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);

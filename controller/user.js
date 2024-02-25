@@ -129,7 +129,7 @@ module.exports.getAllUsers = async (req, res) => {
   try {
     const data = await pool.query(`SELECT * FROM Users WHERE role= 'user'`);
     if (data.rowCount === 0) {
-      return res.status(200).json({ message: "No users found" });
+      return res.status(404).json({ message: "No users found" });
     }
     const allUsers = data.rows;
     return res.status(200).json({ users: allUsers });

@@ -2,6 +2,7 @@ const { isNotEmpty, isNumber } = require("../utils/validation");
 const pool = require("../config/dbconfig");
 const { s3UploadV3 } = require("../S3Bucket/s3Service");
 
+// create-book
 module.exports.contributeBook = async function (req, res) {
   try {
     const { book_name, genre, price, description } = req.body;
@@ -296,7 +297,7 @@ exports.getPhilosophyBooks = async (req, res) => {
   }
 };
 
-// Science-Fiction
+// Humor
 exports.getHumorBooks = async (req, res) => {
   try {
     const humorBooks = await pool.query(
@@ -305,5 +306,23 @@ exports.getHumorBooks = async (req, res) => {
     return res.status(200).json({ books: humorBooks, message: "SUCCESS!" });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Book-Details
+
+exports.getBookDetails = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const findBook = await pool.query(
+      `SELECT * FROM Books WHERE book_id='${id}';`
+    );
+    if (findBook.rows.length === 0) {
+      return res.status(404).json({ message: "Book Not Found!" });
+    }
+    const bookDetails = findBook.rows[0];
+    return res.status(200).json({ bookDetails, message: "Success, here is your book details!" });
+  } catch (e) {
+    return res.status(500).json({ message: "Server Error!" });
   }
 };
