@@ -251,7 +251,7 @@ exports.getFantasyBooks = async (req, res) => {
     const fantasyBooks = await pool.query(
       `SELECT * FROM Books WHERE 'Fantasy' = ANY (genre);`
     );
-    return res.status(200).json({ books: fictionBooks, message: "SUCCESS!" });
+    return res.status(200).json({ books: fantasyBooks, message: "SUCCESS!" });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }

@@ -78,7 +78,7 @@ app.get("/biography", getBiographyBooks);
 app.get("/action", getActionBooks);
 app.get("/horror", getHorrorBooks);
 app.get("/science-fiction", getScienceFictionBooks);
-app.get("/fantsay", getFantasyBooks);
+app.get("/fantasy", getFantasyBooks);
 app.get("/humor", getHumorBooks);
 
 app.listen(PORT, () => {
