@@ -95,6 +95,19 @@ module.exports.contributeBook = async function (req, res) {
   }
 };
 
+
+exports.totalBookCount = async (req, res) => {
+  const totalBooks = await pool.query(`SELECT COUNT(book_id) FROM Books;`)
+  if (totalBooks.rowCount === 0) {
+    return res.status(404).json({ message: "No Books found" });
+  }
+  return res.status(200).json(totalBooks)
+} 
+
+
+// 
+// GENRES
+
 // Horror
 exports.getHorrorBooks = async (req, res) => {
   try {
@@ -326,3 +339,5 @@ exports.getBookDetails = async (req, res) => {
     return res.status(500).json({ message: "Server Error!" });
   }
 };
+
+

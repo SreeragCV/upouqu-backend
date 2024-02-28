@@ -30,6 +30,7 @@ const {
   getHumorBooks,
   getThrillerBooks,
   getBookDetails,
+  totalBookCount,
 } = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
@@ -60,6 +61,7 @@ app.get("/contribute", verifyToken, contributeBook);
 app.get("/user/:id", verifyToken, userProfile);
 app.post("/contribute", multiUpload, verifyToken, contributeBook);
 app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
+app.get("/total-books",verifyToken, isSuperAdmin, totalBookCount);
 app.get("/books/:id", getBookDetails);
 
 //genre-routes

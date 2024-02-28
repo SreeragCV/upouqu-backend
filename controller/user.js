@@ -115,7 +115,6 @@ module.exports.userProfile = async (req, res) => {
       return res.status(404).json({ message: "No User Found" });
     }
     const existingUser = user.rows[0];
-    // console.log(user);
     return res
       .status(200)
       .json({ username: existingUser.username, role: existingUser.role });
