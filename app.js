@@ -31,6 +31,7 @@ const {
   getThrillerBooks,
   getBookDetails,
   totalBookCount,
+  getBooksByQuery,
 } = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
@@ -63,25 +64,7 @@ app.post("/contribute", multiUpload, verifyToken, contributeBook);
 app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 app.get("/total-books",verifyToken, isSuperAdmin, totalBookCount);
 app.get("/books/:id", getBookDetails);
-
-//genre-routes
-app.get("/psychology", getPsychologyBooks);
-app.get("/thriller", getThrillerBooks);
-app.get("/novel", getNovelBooks);
-app.get("/short-story", getShortStoryBooks);
-app.get("/philosophy", getPhilosophyBooks);
-app.get("/literature", getLiteratureBooks);
-app.get("/history", getHistoryBooks);
-app.get("/romance", getRomanceBooks);
-app.get("/mystery", getMysteryBooks);
-app.get("/fiction", getFictionBooks);
-app.get("/poetry", getPoetryBooks);
-app.get("/biography", getBiographyBooks);
-app.get("/action", getActionBooks);
-app.get("/horror", getHorrorBooks);
-app.get("/science-fiction", getScienceFictionBooks);
-app.get("/fantasy", getFantasyBooks);
-app.get("/humor", getHumorBooks);
+app.get('/book/genres', getBooksByQuery)
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);

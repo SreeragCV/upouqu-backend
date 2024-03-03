@@ -4,6 +4,7 @@ const { s3UploadV3 } = require("../S3Bucket/s3Service");
 
 // create-book
 module.exports.contributeBook = async function (req, res) {
+
   try {
     const { book_name, genre, price, description } = req.body;
     const file = req.files;
@@ -59,6 +60,7 @@ module.exports.contributeBook = async function (req, res) {
     }
 
     const files = [file.image[0], file.book[0]];
+
     const { params } = await s3UploadV3(files);
 
     let image_url = `https://upouqu-bucket.s3.amazonaws.com/`;
@@ -95,235 +97,28 @@ module.exports.contributeBook = async function (req, res) {
   }
 };
 
-
 exports.totalBookCount = async (req, res) => {
-  const totalBooks = await pool.query(`SELECT COUNT(book_id) FROM Books;`)
+  const totalBooks = await pool.query(`SELECT COUNT(book_id) FROM Books;`);
   if (totalBooks.rowCount === 0) {
-    return res.status(404).json({ message: "No Books found" });
+    return res.status(404).json({ message: "No Books Found" });
   }
-  return res.status(200).json(totalBooks)
-} 
-
-
-// 
-// GENRES
-
-// Horror
-exports.getHorrorBooks = async (req, res) => {
-  try {
-    const horrorBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Horror' = ANY (genre);`
-    );
-    return res.status(200).json({ books: horrorBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
+  return res.status(200).json(totalBooks);
 };
 
-// Action
-exports.getActionBooks = async (req, res) => {
-  try {
-    const actionBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Action' = ANY (genre);`
-    );
-    return res.status(200).json({ books: actionBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
+exports.getBooksByQuery = async (req,res,next) => {
+  try{
+    const {genre} = req.query
+    const getBooks = await pool.query(
+      `Select * from Books where '${genre}' = ANY (genre);`
+    ) 
+    return  res.status(200).json( { books: getBooks, message: 'SUCCESS!'} )
+  } catch(e) {
+    console.log(e)
+    next
   }
-};
-
-// Thriller
-exports.getThrillerBooks = async (req, res) => {
-  try {
-    const thrillerBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Thriller' = ANY (genre);`
-    );
-    return res.status(200).json({ books: thrillerBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Romance
-exports.getRomanceBooks = async (req, res) => {
-  try {
-    const romanceBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Romance' = ANY (genre);`
-    );
-    return res.status(200).json({ books: romanceBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Psychology
-exports.getPsychologyBooks = async (req, res) => {
-  try {
-    const psychologyBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Psychology' = ANY (genre);`
-    );
-    return res
-      .status(200)
-      .json({ books: psychologyBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Novel
-exports.getNovelBooks = async (req, res) => {
-  try {
-    const novelBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Novel' = ANY (genre);`
-    );
-    return res.status(200).json({ books: novelBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Short Story
-exports.getShortStoryBooks = async (req, res) => {
-  try {
-    const shortStoryBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Short Story' = ANY (genre);`
-    );
-    return res
-      .status(200)
-      .json({ books: shortStoryBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Literature
-exports.getLiteratureBooks = async (req, res) => {
-  try {
-    const literatureBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Literature' = ANY (genre);`
-    );
-    return res
-      .status(200)
-      .json({ books: literatureBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// History
-exports.getHistoryBooks = async (req, res) => {
-  try {
-    const historyBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'History' = ANY (genre);`
-    );
-    return res.status(200).json({ books: historyBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Fiction
-exports.getFictionBooks = async (req, res) => {
-  try {
-    const fictionBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Fiction' = ANY (genre);`
-    );
-    return res.status(200).json({ books: fictionBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Poetry
-exports.getPoetryBooks = async (req, res) => {
-  try {
-    const poetryBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Poetry' = ANY (genre);`
-    );
-    return res.status(200).json({ books: poetryBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Biography
-exports.getBiographyBooks = async (req, res) => {
-  try {
-    const biographyBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Biography' = ANY (genre);`
-    );
-    return res.status(200).json({ books: biographyBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Fantsay
-exports.getFantasyBooks = async (req, res) => {
-  try {
-    const fantasyBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Fantasy' = ANY (genre);`
-    );
-    return res.status(200).json({ books: fantasyBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Mystery
-exports.getMysteryBooks = async (req, res) => {
-  try {
-    const mysteryBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Mystery' = ANY (genre);`
-    );
-    return res.status(200).json({ books: mysteryBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Science-Fiction
-exports.getScienceFictionBooks = async (req, res) => {
-  try {
-    const scienceFictionBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Science Fiction' = ANY (genre);`
-    );
-    return res
-      .status(200)
-      .json({ books: scienceFictionBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Philosophy
-exports.getPhilosophyBooks = async (req, res) => {
-  try {
-    const philosophyBooks = await pool.query(
-      `SELECT * FROM Books WHERE 'Philosophy' = ANY (genre);`
-    );
-    return res
-      .status(200)
-      .json({ books: philosophyBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
-
-// Humor
-exports.getHumorBooks = async (req, res) => {
-  try {
-    const humorBooks = await pool.query(
-      `SELECT * FROM Books WHERE ' Humor' = ANY (genre);`
-    );
-    return res.status(200).json({ books: humorBooks, message: "SUCCESS!" });
-  } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
-  }
-};
+}
 
 // Book-Details
-
 exports.getBookDetails = async (req, res) => {
   try {
     const id = req.params.id;
@@ -333,11 +128,24 @@ exports.getBookDetails = async (req, res) => {
     if (findBook.rows.length === 0) {
       return res.status(404).json({ message: "Book Not Found!" });
     }
+
     const bookDetails = findBook.rows[0];
-    return res.status(200).json({ bookDetails, message: "Success, here is your book details!" });
+    const userId = bookDetails.user_id;
+
+    const user = await pool.query(
+      `SELECT username, full_name, email, user_id FROM Users WHERE user_id='${userId}';`
+    );
+
+    const userDetails = user.rows[0]
+
+    return res
+      .status(200)
+      .json({
+        bookDetails,
+        userDetails,
+        message: "Success, here is your book details!",
+      });
   } catch (e) {
     return res.status(500).json({ message: "Server Error!" });
   }
 };
-
-
