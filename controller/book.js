@@ -91,7 +91,9 @@ module.exports.contributeBook = async function (req, res) {
       [book_name, price, image_url, pdf_url, genres, description, req.user_id]
     );
 
-    return res.json({ message: "Book Uploaded Successfully" });
+    const book_id = newBook.rows[0].book_id
+    
+    return res.json({ message: "Book Uploaded Successfully", book_id });
   } catch (e) {
     return res.json({ message: "Server Error" });
   }
