@@ -4,7 +4,6 @@ const { s3UploadV3 } = require("../S3Bucket/s3Service");
 
 // create-book
 module.exports.contributeBook = async function (req, res) {
-
   try {
     const { book_name, genre, price, description } = req.body;
     const file = req.files;
@@ -91,8 +90,8 @@ module.exports.contributeBook = async function (req, res) {
       [book_name, price, image_url, pdf_url, genres, description, req.user_id]
     );
 
-    const book_id = newBook.rows[0].book_id
-    
+    const book_id = newBook.rows[0].book_id;
+
     return res.json({ message: "Book Uploaded Successfully", book_id });
   } catch (e) {
     return res.json({ message: "Server Error" });
@@ -107,20 +106,20 @@ exports.totalBookCount = async (req, res) => {
   return res.status(200).json(totalBooks);
 };
 
-exports.getBooksByQuery = async (req,res,next) => {
-  try{
-    const {genre} = req.query
+// book-genres
+exports.getBooksByQuery = async (req, res, next) => {
+  try {
+    const { genre } = req.query;
     const getBooks = await pool.query(
-      `Select * from Books where '${genre}' = ANY (genre);`
-    ) 
-    return  res.status(200).json( { books: getBooks, message: 'SUCCESS!'} )
-  } catch(e) {
-    console.log(e)
-    next
+      `SELECT * FROM Books WHERE '${genre}' = ANY (genre);`
+    );
+    return res.status(200).json({ books: getBooks, message: "SUCCESS!" });
+  } catch (e) {
+    return res.status(500).json({ message: "Server Error" });
   }
-}
+};
 
-// Book-Details
+// book-details
 exports.getBookDetails = async (req, res) => {
   try {
     const id = req.params.id;
@@ -138,15 +137,28 @@ exports.getBookDetails = async (req, res) => {
       `SELECT username, full_name, email, user_id FROM Users WHERE user_id='${userId}';`
     );
 
-    const userDetails = user.rows[0]
+    const userDetails = user.rows[0];
 
-    return res
-      .status(200)
-      .json({
-        bookDetails,
-        userDetails,
-        message: "Success, here is your book details!",
-      });
+    return res.status(200).json({
+      bookDetails,
+      userDetails,
+      message: "Success, here is your book details!",
+    });
+  } catch (e) {
+    return res.status(500).json({ message: "Server Error!" });
+  }
+};
+
+// book-deletion
+exports.deleteBook = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleteBook = await pool.query(
+      `DELETE FROM Books WHERE book_id='${id}';`
+    );
+    if (deleteBook.rowCount === 1) {
+      return res.status(200).json({ message: "Successfully Deleted!", status: true });
+    }
   } catch (e) {
     return res.status(500).json({ message: "Server Error!" });
   }
