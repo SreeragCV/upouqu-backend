@@ -153,6 +153,10 @@ exports.getBookDetails = async (req, res) => {
 exports.deleteBook = async (req, res) => {
   try {
     const { id } = req.params;
+    const findBook = await pool.query(`SELECT user_id FROM Books WHERE book_id='${id}';`);
+    if(findBook.rows[0].user_id !== req.user_id){
+      res.status(401).json({message: 'Unauthorized!'})
+    }
     const deleteBook = await pool.query(
       `DELETE FROM Books WHERE book_id='${id}';`
     );
