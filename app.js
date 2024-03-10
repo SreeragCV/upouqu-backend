@@ -33,6 +33,7 @@ const {
   totalBookCount,
   getBooksByQuery,
   deleteBook,
+  updateBook,
 } = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
@@ -67,6 +68,7 @@ app.get("/total-books", verifyToken, isSuperAdmin, totalBookCount);
 app.get("/books/:id", getBookDetails);
 app.get("/book/genres", getBooksByQuery);
 app.delete("/book/:id", verifyToken, deleteBook);
+app.patch("/book/:id", multiUpload, verifyToken, updateBook);
 
 app.listen(PORT, () => {
   console.log(`Listening On Port ${PORT}`);
