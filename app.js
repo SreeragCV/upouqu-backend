@@ -51,6 +51,7 @@ app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 app.get("/total-books", verifyToken, isSuperAdmin, totalBookCount);
 app.get("/books/:id", getBookDetails);
 app.get("/book/genres", getBooksByQuery);
+// app.post('/send/:id', sendMessage)
 app.delete("/book/:id", verifyToken, deleteBook);
 app.patch("/book/:id", multiUpload, verifyToken, updateBook);
 
