@@ -125,24 +125,17 @@ exports.getBookDetails = async (req, res) => {
   try {
     const id = req.params.id;
     const findBook = await pool.query(
-      `SELECT * FROM Books WHERE book_id='${id}';`
+      `SELECT users.*, books.* FROM users INNER JOIN books ON users.user_id=books.user_id WHERE books.book_id='${id}';`
     );
     if (findBook.rows.length === 0) {
       return res.status(404).json({ message: "Book Not Found!" });
     }
-
+  
     const bookDetails = findBook.rows[0];
-    const userId = bookDetails.user_id;
-
-    const user = await pool.query(
-      `SELECT username, full_name, email, user_id FROM Users WHERE user_id='${userId}';`
-    );
-
-    const userDetails = user.rows[0];
+    console.log(bookDetails);
 
     return res.status(200).json({
       bookDetails,
-      userDetails,
       message: "Success, here is your book details!",
     });
   } catch (e) {
@@ -150,7 +143,7 @@ exports.getBookDetails = async (req, res) => {
   }
 };
 
-// book-deletion ####################################################################################################################
+// book-deletion #########################################################################################################################
 exports.deleteBook = async (req, res) => {
   try {
     const { id } = req.params;

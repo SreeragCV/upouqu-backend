@@ -12,23 +12,6 @@ const {
 } = require("./controller/user");
 const {
   contributeBook,
-  getHorrorBooks,
-  getNovelBooks,
-  getPsychologyBooks,
-  getShortStoryBooks,
-  getPhilosophyBooks,
-  getLiteratureBooks,
-  getHistoryBooks,
-  getRomanceBooks,
-  getMysteryBooks,
-  getFictionBooks,
-  getPoetryBooks,
-  getBiographyBooks,
-  getActionBooks,
-  getScienceFictionBooks,
-  getFantasyBooks,
-  getHumorBooks,
-  getThrillerBooks,
   getBookDetails,
   totalBookCount,
   getBooksByQuery,
@@ -37,6 +20,7 @@ const {
 } = require("./controller/book");
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
+const { connectToMongoServer } = require("./connectToMongodb/connectToMongoDB");
 const PORT = process.env.PORT || 8080;
 
 const storage = multer.memoryStorage();
@@ -71,5 +55,6 @@ app.delete("/book/:id", verifyToken, deleteBook);
 app.patch("/book/:id", multiUpload, verifyToken, updateBook);
 
 app.listen(PORT, () => {
+  connectToMongoServer();
   console.log(`Listening On Port ${PORT}`);
 });
