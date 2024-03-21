@@ -21,6 +21,7 @@ const {
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
 const { connectToMongoServer } = require("./connectToMongodb/connectToMongoDB");
+const { sendMessage, getMessage } = require("./controller/message");
 const PORT = process.env.PORT || 8080;
 
 const storage = multer.memoryStorage();
@@ -41,19 +42,24 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// auth
 app.post("/signup", createUser);
 app.post("/login", loginUser);
 app.get("/is-auth", verifyToken, isAuth);
+// books
 app.get("/contribute", verifyToken, contributeBook);
-app.get("/user/:id", verifyToken, userProfile);
 app.post("/contribute", multiUpload, verifyToken, contributeBook);
-app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 app.get("/total-books", verifyToken, isSuperAdmin, totalBookCount);
 app.get("/books/:id", getBookDetails);
 app.get("/book/genres", getBooksByQuery);
-// app.post('/send/:id', sendMessage)
 app.delete("/book/:id", verifyToken, deleteBook);
 app.patch("/book/:id", multiUpload, verifyToken, updateBook);
+// users
+app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
+app.get("/user/:userId", verifyToken, userProfile);
+// chat
+app.post('/user/chat/:userId', verifyToken, sendMessage);
+app.get('/chat/:userId',verifyToken, getMessage)
 
 app.listen(PORT, () => {
   connectToMongoServer();

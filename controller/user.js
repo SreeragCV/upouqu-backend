@@ -107,7 +107,7 @@ module.exports.isAuth = async (req, res) => {
 // user-profile
 module.exports.userProfile = async (req, res) => {
   try {
-    const id = await req.params.id;
+    const id = await req.params.userId;
     const user = await pool.query(
       `SELECT * FROM Users WHERE user_id= '${id}';`
     );
