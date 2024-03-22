@@ -2,6 +2,7 @@ const pool = require("../config/dbconfig");
 const bcrypt = require("bcrypt");
 const { isEmail, isNotEmpty, hasMinLength } = require("../utils/validation");
 const jwtGenerator = require("../utils/JwtGenerator");
+const { v4: uuidV4 } = require("uuid");
 
 // signup
 module.exports.createUser = async (req, res) => {
@@ -43,21 +44,30 @@ module.exports.createUser = async (req, res) => {
         .json({ error_message: "Username or Email already exists" });
     }
 
+    const uniqueId = uuidV4();
+    const dp_url = `https://robohash.org/${uniqueId}.png`;
     const role = "user";
     const hashPassword = await bcrypt.hash(password, 12);
     const newUser = await pool.query(
-      `INSERT INTO Users (full_name, username, email, role, password) VALUES($1, $2, $3, $4, $5) RETURNING *`,
-      [full_name, username, email, role, hashPassword]
+      `INSERT INTO Users (full_name, username, email, dp_url, role, password) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [full_name, username, email, dp_url, role, hashPassword]
     );
-    
+
     const id = newUser.rows[0].user_id;
-    const token = jwtGenerator(id, role, full_name);
+    const token = jwtGenerator(id, role, full_name, dp_url);
 
     res.setHeader("Authorization", `Bearer ${token}`);
 
     return res
       .status(201)
-      .json({ message: "Signup Successfull", id, token, role, full_name });
+      .json({
+        message: "Signup Successfull",
+        id,
+        token,
+        role,
+        full_name,
+        dp_url,
+      });
   } catch (e) {
     res.status(500).json({ message: "Server Error" });
   }
@@ -84,12 +94,20 @@ module.exports.loginUser = async (req, res) => {
     }
     const id = user.user_id;
     const role = user.role;
-    const full_name = user.full_name
-    const token = jwtGenerator(id, role);
+    const full_name = user.full_name;
+    const dp_url = user.dp_url;
+    const token = jwtGenerator(id, role, full_name, dp_url);
     res.setHeader("Authorization", `Bearer ${token}`);
     return res
       .status(201)
-      .json({ message: "Login Successfull", id, token, role, full_name });
+      .json({
+        message: "Login Successfull",
+        id,
+        token,
+        role,
+        full_name,
+        dp_url,
+      });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }
@@ -98,9 +116,15 @@ module.exports.loginUser = async (req, res) => {
 // authentication
 module.exports.isAuth = async (req, res) => {
   try {
-    res.json({ status: true, user_id: req.user_id, role: req.role, full_name: req.full_name });
+    return res.json({
+      status: true,
+      user_id: req.user_id,
+      role: req.role,
+      full_name: req.full_name,
+      dp_url: req.dp_url,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ message: "Server Error" });
   }
 };
 
@@ -115,9 +139,7 @@ module.exports.userProfile = async (req, res) => {
       return res.status(404).json({ message: "No User Found" });
     }
     const existingUser = user.rows[0];
-    return res
-      .status(200)
-      .json({ username: existingUser.username, role: existingUser.role });
+    return res.status(200).json({ existingUser });
   } catch (e) {
     return res.status(500).json({ message: "Server Error" });
   }

@@ -19,6 +19,7 @@ module.exports.verifyToken = async function (req, res, next) {
     req.user_id = verifiedUser.user_id;
     req.role = verifiedUser.role;
     req.full_name = verifiedUser.full_name;
+    req.dp_url = verifiedUser.dp_url;
     next();
   } catch (e) {
     res.status(400).json("Invalid Token");

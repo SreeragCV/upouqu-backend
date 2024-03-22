@@ -130,9 +130,8 @@ exports.getBookDetails = async (req, res) => {
     if (findBook.rows.length === 0) {
       return res.status(404).json({ message: "Book Not Found!" });
     }
-  
+
     const bookDetails = findBook.rows[0];
-    console.log(bookDetails);
 
     return res.status(200).json({
       bookDetails,

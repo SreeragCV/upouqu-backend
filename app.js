@@ -21,7 +21,7 @@ const {
 const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
 const { connectToMongoServer } = require("./connectToMongodb/connectToMongoDB");
-const { sendMessage, getMessage } = require("./controller/message");
+const { sendMessage, getMessage, getConversations } = require("./controller/message");
 const PORT = process.env.PORT || 8080;
 
 const storage = multer.memoryStorage();
@@ -58,8 +58,9 @@ app.patch("/book/:id", multiUpload, verifyToken, updateBook);
 app.get("/all-users", verifyToken, isSuperAdmin, getAllUsers);
 app.get("/user/:userId", verifyToken, userProfile);
 // chat
+app.get('/user/chat/:userId',verifyToken, getMessage)
 app.post('/user/chat/:userId', verifyToken, sendMessage);
-app.get('/chat/:userId',verifyToken, getMessage)
+app.get('/chat/conversations', verifyToken, getConversations)
 
 app.listen(PORT, () => {
   connectToMongoServer();
