@@ -6,6 +6,7 @@ const pool = require("../config/dbconfig.js");
 module.exports.sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
+    console.log(message);
     const { userId: receiverId } = req.params;
     const senderId = req.user_id;
 
@@ -48,9 +49,7 @@ module.exports.getMessage = async (req, res) => {
 
     if (!conversation) return res.status(200).json([]);
 
-    const messages = conversation.messages;
-
-    return res.status(200).json(messages);
+    return res.status(200).json(conversation.messages);
   } catch (e) {
     console.log("getMessage controller error");
     return res.status(500).json({ error: "Server Error" });

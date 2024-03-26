@@ -12,6 +12,7 @@ const conversationModel = new Schema(
     messages: [
       {
         type: mongoose.Types.ObjectId,
+        ref: 'Message',
         default: [],
         required: true,
       },
