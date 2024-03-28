@@ -95,14 +95,14 @@ module.exports.contributeBook = async function (req, res) {
 
     return res.json({ message: "Book Uploaded Successfully", book_id });
   } catch (e) {
-    return res.json({ message: "Server Error" });
+    return res.json({ error: "Server Error" });
   }
 };
 
 exports.totalBookCount = async (req, res) => {
   const totalBooks = await pool.query(`SELECT COUNT(book_id) FROM Books;`);
   if (totalBooks.rowCount === 0) {
-    return res.status(404).json({ message: "No Books Found" });
+    return res.status(404).json({ error: "No Books Found" });
   }
   return res.status(200).json(totalBooks);
 };
@@ -116,7 +116,7 @@ exports.getBooksByQuery = async (req, res, next) => {
     );
     return res.status(200).json({ books: getBooks, message: "SUCCESS!" });
   } catch (e) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({ error: "Server Error" });
   }
 };
 
@@ -138,7 +138,7 @@ exports.getBookDetails = async (req, res) => {
       message: "Success, here is your book details!",
     });
   } catch (e) {
-    return res.status(500).json({ message: "Server Error!" });
+    return res.status(500).json({ error: "Server Error!" });
   }
 };
 
@@ -381,5 +381,7 @@ exports.updateBook = async (req, res) => {
 
       return res.status(200).json({ message: "post updated!", book_id });
     }
-  } catch (e) {}
+  } catch (e) {
+    return res.status(500).json({error: "Server Error"});
+  }
 };
