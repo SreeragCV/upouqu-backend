@@ -1,5 +1,4 @@
 const express = require("express");
-const app = express();
 const dotenv = require("dotenv");
 dotenv.config();
 const cors = require("cors");
@@ -22,6 +21,7 @@ const { verifyToken, isSuperAdmin } = require("./middleware/authorization");
 const multer = require("multer");
 const { connectToMongoServer } = require("./connectToMongodb/connectToMongoDB");
 const { sendMessage, getMessage, getConversations } = require("./controller/message");
+const { app, server } = require("./socket/socket");
 const PORT = process.env.PORT || 8080;
 
 const storage = multer.memoryStorage();
@@ -62,7 +62,7 @@ app.get('/user/chat/:userId',verifyToken, getMessage)
 app.post('/user/chat/:userId', verifyToken, sendMessage);
 app.get('/chat/conversations', verifyToken, getConversations)
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   connectToMongoServer();
   console.log(`Listening On Port ${PORT}`);
 });
